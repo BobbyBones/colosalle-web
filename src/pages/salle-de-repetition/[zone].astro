@@ -1,0 +1,250 @@
+﻿---
+import { getPublishedVenues } from "../../lib/venues.mjs";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  const venues = await getPublishedVenues();
+
+  const parArr = new Map();
+  const parVille = new Map();
+
+  for (const v of venues) {
+    const a = parArr.get(v.arrSlug) || {
+      nom: v.displayLocation, villeSlug: v.citySlug, ville: v.city, lieux: [],
+    };
+    a.lieux.push(v);
+    parArr.set(v.arrSlug, a);
+
+    const c = parVille.get(v.citySlug) || { nom: v.city, lieux: [], arrs: new Set() };
+    c.lieux.push(v);
+    if (v.arrondissement) c.arrs.add(v.arrSlug);
+    parVille.set(v.citySlug, c);
+  }
+
+  const villesPubliees = [...parVille.entries()].filter(([slug]) => !parArr.has(slug));
+  const listeVilles = villesPubliees
+    .map(([slug, c]) => ({ slug, nom: c.nom, total: c.lieux.length }))
+    .sort((a, b) => b.total - a.total);
+
+  const pages = [];
+
+  for (const [slug, c] of villesPubliees) {
+    pages.push({
+      params: { zone: slug },
+      props: {
+        niveau: "ville",
+        nom: c.nom,
+        lieux: c.lieux.sort((a, b) => a.pricePerHour - b.pricePerHour),
+        parent: null,
+        enfants: [...c.arrs]
+          .map((s) => ({ slug: s, nom: parArr.get(s).nom, total: parArr.get(s).lieux.length }))
+          .sort((a, b) => a.nom.localeCompare(b.nom, "fr", { numeric: true })),
+        autresVilles: listeVilles.filter((v) => v.slug !== slug),
+      },
+    });
+  }
+
+  for (const [slug, a] of parArr.entries()) {
+    const villePubliee = parVille.has(a.villeSlug) && !parArr.has(a.villeSlug);
+    const freres = [...parArr.entries()]
+      .filter(([s, x]) => s !== slug && x.villeSlug === a.villeSlug)
+      .map(([s, x]) => ({ slug: s, nom: x.nom, total: x.lieux.length }))
+      .sort((x, y) => x.nom.localeCompare(y.nom, "fr", { numeric: true }));
+
+    pages.push({
+      params: { zone: slug },
+      props: {
+        niveau: "arrondissement",
+        nom: a.nom,
+        lieux: a.lieux.sort((x, y) => x.pricePerHour - y.pricePerHour),
+        parent: villePubliee ? { slug: a.villeSlug, nom: a.ville } : null,
+        enfants: freres,
+        autresVilles: listeVilles.filter((v) => v.slug !== a.villeSlug),
+      },
+    });
+  }
+
+  return pages;
+}
+
+const { niveau, nom, lieux, parent, enfants, autresVilles } = Astro.props;
+const site = "https://colosalle.fr";
+const url = `${site}/salle-de-repetition/${Astro.params.zone}`;
+
+const prixMin = Math.min(...lieux.map((l) => l.pricePerHour));
+const prixMax = Math.max(...lieux.map((l) => l.pricePerHour));
+const capaciteMax = Math.max(...lieux.map((l) => l.capacity));
+const nbLieux = lieux.length;
+const pluriel = nbLieux > 1;
+const fourchette =
+  prixMin === prixMax
+    ? `à ${prixMin} € de l'heure`
+    : `de ${prixMin} à ${prixMax} € de l'heure`;
+
+const titreEnfants =
+  niveau === "ville" ? "Par arrondissement" : "Ailleurs dans la même ville";
+
+const metaDesc = `${nbLieux} salle${pluriel ? "s" : ""} de répétition à louer à l'heure à ${nom}, ${fourchette}. Théâtre, danse, musique. Réservation sur Colosalle.`.slice(0, 155);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: `Salles de répétition à ${nom}`,
+  url,
+  numberOfItems: nbLieux,
+  itemListElement: lieux.map((l, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    url: `${site}/lieux/${l.slug}`,
+    name: l.title,
+  })),
+};
+
+const ETOILE = "m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z";
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Salles de répétition à {nom} — location à l'heure | Colosalle</title>
+    <meta name="description" content={metaDesc} />
+    <link rel="canonical" href={url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`Salles de répétition à ${nom}`} />
+    <meta property="og:description" content={metaDesc} />
+    <meta property="og:url" content={url} />
+    <meta property="og:site_name" content="Colosalle" />
+    {lieux[0]?.photos[0] && <meta property="og:image" content={lieux[0].photos[0]} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#E63946" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/site.css?v=5" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="wordmark" href="/">Colosalle</a>
+        <a class="nav-lien" href="/devenir-hote">Proposer un lieu</a>
+      </div>
+    </nav>
+
+    <div class="page">
+      <nav class="fil" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> &nbsp;/&nbsp;
+        {parent && (
+          <>
+            <a href={`/salle-de-repetition/${parent.slug}`}>{parent.nom}</a> &nbsp;/&nbsp;
+          </>
+        )}
+        <span aria-current="page">{nom}</span>
+      </nav>
+
+      <header class="zone-tete">
+        <h1>Salles de répétition à {nom}</h1>
+        <p class="zone-intro">
+          {nbLieux} lieu{pluriel ? "x" : ""} à louer à l'heure, {fourchette}, pour
+          des groupes allant jusqu'à {capaciteMax} personnes. Répétitions de
+          théâtre, danse et musique, italiennes, filages et castings.
+        </p>
+        {enfants.length > 0 && (
+          <div class="sous-zones">
+            <span class="sous-zones-titre">{titreEnfants}</span>
+            <div>
+              {enfants.map((z) => (
+                <a href={`/salle-de-repetition/${z.slug}`}>
+                  {z.nom} <span>{z.total}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </header>
+
+      <ul class="grille">
+        {lieux.map((l) => (
+          <li class="fiche">
+            <a href={`/lieux/${l.slug}`}>
+              <div class="fiche-photo">
+                {l.photos[0] ? (
+                  <Image
+                    src={l.photos[0]}
+                    alt={l.title}
+                    inferSize
+                    width={640}
+                    quality={70}
+                    format="webp"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="fiche-vide"></div>
+                )}
+                {l.reviewCount > 0 && (
+                  <span class="fiche-note">
+                    <svg viewBox="0 0 24 24"><path d={ETOILE} /></svg>
+                    {l.rating.toFixed(1)}
+                  </span>
+                )}
+              </div>
+              <div class="fiche-corps">
+                <span class="fiche-type">
+                  {l.typeLabel}{niveau === "ville" ? ` · ${l.displayLocation}` : ""}
+                </span>
+                <h2>{l.title}</h2>
+                <p class="fiche-specs">{l.surface} m² · jusqu'à {l.capacity} personnes</p>
+                <p class="fiche-prix"><strong>{l.pricePerHour} €</strong> / heure</p>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      {autresVilles.length > 0 && (
+        <section class="autres-zones">
+          <h2>Dans d'autres villes</h2>
+          <ul>
+            {autresVilles.map((v) => (
+              <li>
+                <a href={`/salle-de-repetition/${v.slug}`}>
+                  {v.nom} <span>{v.total}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <aside class="zone-texte">
+        <p>
+          Trouver un lieu pour répéter reste le premier obstacle des compagnies et
+          des artistes indépendants. Colosalle met en relation directe les
+          propriétaires de salles — théâtres, studios de danse, salles
+          associatives, arrière-salles — avec les comédiens, danseurs et musiciens
+          qui en ont besoin, à l'heure et sans engagement. Chaque lieu indique sa
+          surface, sa capacité, ses équipements et ses horaires d'accès. L'adresse
+          exacte est communiquée une fois la réservation confirmée par l'hôte.
+        </p>
+      </aside>
+    </div>
+
+    <footer class="pied">
+      <div class="pied-inner">
+        <span>© 2026 Colosalle</span>
+        <div class="pied-liens">
+          <a href="/devenir-hote">Proposer un lieu</a>
+          <a href="/cgu.html">Conditions générales</a>
+          <a href="/confidentialite.html">Confidentialité</a>
+          <a href="mailto:support@colosalle.fr">support@colosalle.fr</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

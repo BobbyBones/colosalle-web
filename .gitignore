@@ -24,3 +24,6 @@ pnpm-debug.log*
 .idea/
 
 service-account.json
+
+inspect.mjs
+test-firestore.mjs

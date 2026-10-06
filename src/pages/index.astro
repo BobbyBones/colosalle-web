@@ -1,17 +1,180 @@
+﻿---
+import { getPublishedVenues } from "../lib/venues.mjs";
+import { Image } from "astro:assets";
+
+const venues = await getPublishedVenues();
+
+const zones = new Map();
+for (const v of venues) {
+  const z = zones.get(v.arrSlug) || { nom: v.displayLocation, total: 0 };
+  z.total += 1;
+  zones.set(v.arrSlug, z);
+}
+const listeZones = [...zones.entries()]
+  .map(([slug, z]) => ({ slug, ...z }))
+  .sort((a, b) => a.nom.localeCompare(b.nom, "fr", { numeric: true }));
+
+const recents = [...venues].sort((a, b) => a.pricePerHour - b.pricePerHour).slice(0, 6);
+const prixMin = venues.length ? Math.min(...venues.map((v) => v.pricePerHour)) : 0;
+
+const site = "https://colosalle.fr";
+const metaDesc = `Louez une salle de répétition à l'heure à Paris, à partir de ${prixMin} € de l'heure. Théâtres, studios de danse, salles polyvalentes. Réservation et paiement sécurisé dans l'application Colosalle.`.slice(0, 155);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Colosalle",
+  url: site,
+  description: metaDesc,
+};
+
+const ETOILE = "m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z";
 ---
 
----
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Colosalle — louer une salle de répétition à l'heure à Paris</title>
+    <meta name="description" content={metaDesc} />
+    <link rel="canonical" href={site} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Colosalle — salles de répétition à l'heure à Paris" />
+    <meta property="og:description" content={metaDesc} />
+    <meta property="og:url" content={site} />
+    <meta property="og:site_name" content="Colosalle" />
+    {recents[0]?.photos[0] && <meta property="og:image" content={recents[0].photos[0]} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#E63946" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/site.css?v=4" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="wordmark" href="/">Colosalle</a>
+        <a class="nav-lien" href="/devenir-hote">Proposer un lieu</a>
+      </div>
+    </nav>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+    <header class="accueil-hero">
+      <div class="accueil-hero-inner">
+        <h1>Répéter à Paris<br />sans y laisser son cachet.</h1>
+        <p>
+          Théâtres, studios de danse, salles polyvalentes : réservez à l'heure,
+          près de chez vous, à partir de {prixMin} € de l'heure.
+        </p>
+        {listeZones.length > 0 && (
+          <div class="hero-zones">
+            {listeZones.map((z) => (
+              <a href={`/salle-de-repetition/${z.slug}`}>{z.nom}</a>
+            ))}
+          </div>
+        )}
+      </div>
+    </header>
+
+    <div class="page">
+      {recents.length > 0 && (
+        <section class="accueil-section">
+          <h2>Les lieux disponibles</h2>
+          <ul class="grille">
+            {recents.map((l) => (
+              <li class="fiche">
+                <a href={`/lieux/${l.slug}`}>
+                  <div class="fiche-photo">
+                    {l.photos[0] ? (
+                      <Image
+                        src={l.photos[0]}
+                        alt={l.title}
+                        inferSize
+                        width={640}
+                        quality={70}
+                        format="webp"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="fiche-vide"></div>
+                    )}
+                    {l.reviewCount > 0 && (
+                      <span class="fiche-note">
+                        <svg viewBox="0 0 24 24"><path d={ETOILE} /></svg>
+                        {l.rating.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+                  <div class="fiche-corps">
+                    <span class="fiche-type">{l.typeLabel} · {l.displayLocation}</span>
+                    <h3>{l.title}</h3>
+                    <p class="fiche-specs">{l.surface} m² · jusqu'à {l.capacity} personnes</p>
+                    <p class="fiche-prix"><strong>{l.pricePerHour} €</strong> / heure</p>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section class="accueil-section">
+        <h2>Comment ça marche</h2>
+        <ol class="etapes">
+          <li>
+            <h3>Trouvez un lieu</h3>
+            <p>
+              Filtrez par quartier, surface, équipements et budget. Chaque fiche
+              indique la capacité, les horaires d'accès et le matériel sur place.
+            </p>
+          </li>
+          <li>
+            <h3>Réservez votre créneau</h3>
+            <p>
+              Choisissez la date et l'heure. L'hôte confirme, et vous recevez
+              l'adresse exacte ainsi que les instructions d'accès.
+            </p>
+          </li>
+          <li>
+            <h3>Répétez</h3>
+            <p>
+              Le paiement est sécurisé et n'est débité qu'après confirmation.
+              Annulation remboursée jusqu'à 7 jours avant le créneau.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="accueil-hote">
+        <div>
+          <h2>Vous avez une salle qui reste vide ?</h2>
+          <p>
+            Bars, salles associatives, studios, théâtres : vos créneaux creux
+            peuvent devenir un revenu. Vous gardez la main sur vos disponibilités
+            et vos tarifs, et vous touchez 100 % du montant — Colosalle ne prend
+            aucune commission au lancement.
+          </p>
+          <a class="bouton" href="/devenir-hote">Proposer mon lieu</a>
+        </div>
+      </section>
+    </div>
+
+    <footer class="pied">
+      <div class="pied-inner">
+        <span>© 2026 Colosalle</span>
+        <div class="pied-liens">
+          <a href="/devenir-hote">Proposer un lieu</a>
+          <a href="/cgu.html">Conditions générales</a>
+          <a href="/confidentialite.html">Confidentialité</a>
+          <a href="mailto:support@colosalle.fr">support@colosalle.fr</a>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>

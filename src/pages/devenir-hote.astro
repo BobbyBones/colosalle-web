@@ -1,0 +1,196 @@
+﻿---
+import { getPublishedVenues } from "../lib/venues.mjs";
+
+const venues = await getPublishedVenues();
+const site = "https://colosalle.fr";
+const url = `${site}/devenir-hote`;
+
+const metaDesc =
+  "Vous avez une salle, un studio ou une arrière-salle qui reste vide ? Louez vos créneaux creux à des artistes, à l'heure. 0 % de commission au lancement, vous touchez 100 % du montant.";
+
+const QUESTIONS = [
+  {
+    q: "Combien ça me coûte ?",
+    r: "Rien. L'inscription est gratuite et Colosalle ne prélève aucune commission au lancement : vous recevez 100 % du montant payé par l'artiste. Une commission pourra être introduite plus tard, avec un préavis de 30 jours prévu dans les conditions générales.",
+  },
+  {
+    q: "Qui vient dans mon lieu ?",
+    r: "Des comédiens, danseurs, musiciens et compagnies, majoritairement issus des écoles parisiennes. Chaque compte est vérifié par email, et vous consultez le profil et les évaluations de l'artiste avant d'accepter une demande.",
+  },
+  {
+    q: "Je garde la main sur mon planning ?",
+    r: "Entièrement. Vous définissez vos horaires d'ouverture, bloquez les jours de fermeture et validez chaque réservation une par une. Aucune réservation ne se fait sans votre accord.",
+  },
+  {
+    q: "Et si le lieu est abîmé ?",
+    r: "Vous pouvez demander une caution, remise en main propre le jour de la réservation et restituée en fin de créneau. Les artistes sont identifiés et évalués après chaque passage ; un comportement problématique peut être signalé et le compte bloqué.",
+  },
+  {
+    q: "Comment suis-je payé ?",
+    r: "Par virement automatique via Stripe, notre prestataire de paiement. L'artiste paie à la réservation, les fonds vous sont transférés sur votre compte bancaire. Vous n'avez aucune facture à établir ni d'espèces à manipuler.",
+  },
+  {
+    q: "Mon adresse est-elle publique ?",
+    r: "Non. Le site et l'application n'affichent que l'arrondissement et une zone approximative sur la carte. L'adresse exacte n'est transmise qu'à l'artiste dont vous avez accepté la réservation.",
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: QUESTIONS.map((x) => ({
+    "@type": "Question",
+    name: x.q,
+    acceptedAnswer: { "@type": "Answer", text: x.r },
+  })),
+};
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Proposer un lieu — rentabilisez vos créneaux vides | Colosalle</title>
+    <meta name="description" content={metaDesc} />
+    <link rel="canonical" href={url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Proposer un lieu sur Colosalle" />
+    <meta property="og:description" content={metaDesc} />
+    <meta property="og:url" content={url} />
+    <meta property="og:site_name" content="Colosalle" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#E63946" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/site.css?v=5" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="wordmark" href="/">Colosalle</a>
+        <a class="nav-lien" href="/">Trouver une salle</a>
+      </div>
+    </nav>
+
+    <header class="accueil-hero">
+      <div class="accueil-hero-inner">
+        <h1>Une salle vide<br />ne rapporte rien.</h1>
+        <p>
+          Bars, salles associatives, studios, théâtres : louez vos créneaux creux
+          à des artistes, à l'heure. Vous fixez vos tarifs, vos horaires, et vous
+          touchez 100 % du montant.
+        </p>
+        <a class="bouton bouton-large" href="#commencer">Proposer mon lieu</a>
+      </div>
+    </header>
+
+    <div class="page">
+      <section class="accueil-section">
+        <h2>Ce que ça change pour vous</h2>
+        <div class="arguments">
+          <div>
+            <h3>Un revenu sur des heures mortes</h3>
+            <p>
+              Une arrière-salle inoccupée l'après-midi, un studio libre entre deux
+              cours, une salle paroissiale vide en semaine : ces créneaux ont une
+              valeur pour les artistes, qui peinent à trouver où répéter.
+            </p>
+          </div>
+          <div>
+            <h3>Zéro gestion</h3>
+            <p>
+              Pas de devis, pas de facture, pas d'espèces. L'artiste paie en ligne
+              au moment de réserver, et le virement arrive sur votre compte.
+            </p>
+          </div>
+          <div>
+            <h3>Vous décidez de tout</h3>
+            <p>
+              Vos horaires, votre tarif horaire, votre caution éventuelle. Chaque
+              demande passe par votre validation : rien ne se fait sans vous.
+            </p>
+          </div>
+          <div>
+            <h3>Un public identifié</h3>
+            <p>
+              Des compagnies et des artistes du spectacle vivant, avec un profil
+              vérifié et des évaluations laissées par les hôtes précédents.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="accueil-section">
+        <h2>Comment ça se passe</h2>
+        <ol class="etapes">
+          <li>
+            <h3>Décrivez votre lieu</h3>
+            <p>
+              Quelques photos, la surface, la capacité, les équipements et vos
+              horaires d'accès. Comptez dix minutes.
+            </p>
+          </li>
+          <li>
+            <h3>Recevez des demandes</h3>
+            <p>
+              Vous consultez le profil de l'artiste, la date et la durée
+              souhaitées, puis vous acceptez ou refusez.
+            </p>
+          </li>
+          <li>
+            <h3>Encaissez</h3>
+            <p>
+              Le paiement est prélevé à la réservation et vous est reversé par
+              virement, sans intervention de votre part.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="accueil-section">
+        <h2>Questions fréquentes</h2>
+        <div class="faq">
+          {QUESTIONS.map((x) => (
+            <details>
+              <summary>{x.q}</summary>
+              <p>{x.r}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="accueil-hote" id="commencer">
+        <div>
+          <h2>Prêt à proposer votre lieu ?</h2>
+          <p>
+            La création d'annonce se fait dans l'application Colosalle. Si vous
+            préférez en parler avant, écrivez-nous : on vous rappelle et on monte
+            l'annonce avec vous.
+          </p>
+          <a class="bouton" href="mailto:support@colosalle.fr?subject=Je%20souhaite%20proposer%20un%20lieu">
+            Nous écrire
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <footer class="pied">
+      <div class="pied-inner">
+        <span>© 2026 Colosalle</span>
+        <div class="pied-liens">
+          <a href="/">Trouver une salle</a>
+          <a href="/cgu.html">Conditions générales</a>
+          <a href="/confidentialite.html">Confidentialité</a>
+          <a href="mailto:support@colosalle.fr">support@colosalle.fr</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

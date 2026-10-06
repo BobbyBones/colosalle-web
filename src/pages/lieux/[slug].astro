@@ -1,0 +1,430 @@
+﻿---
+import { getPublishedVenues } from "../../lib/venues.mjs";
+import { icon } from "../../lib/icons.mjs";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  const venues = await getPublishedVenues();
+  return venues.map((venue) => ({
+    params: { slug: venue.slug },
+    props: { venue },
+  }));
+}
+
+// À VÉRIFIER avec les CGU validées par l'avocat avant mise en ligne.
+const ANNULATION = [
+  { delai: "Plus de 7 jours avant le créneau", valeur: "Remboursé à 100 %" },
+  { delai: "Entre 48 heures et 7 jours avant", valeur: "Remboursé à 50 %" },
+  { delai: "Moins de 48 heures avant", valeur: "Aucun remboursement" },
+];
+
+const { venue } = Astro.props;
+const site = "https://colosalle.fr";
+const url = `${site}/lieux/${venue.slug}`;
+
+const toutes = venue.photos;
+let photos = toutes.slice(0, 5);
+if (photos.length === 4) photos = photos.slice(0, 3);
+const classeMosaique = { 1: "une", 2: "deux", 3: "trois" }[photos.length] || "";
+const cover = toutes[0] || "";
+
+const metaDesc = (
+  venue.description ||
+  `${venue.typeLabel} à louer à l'heure à ${venue.displayLocation}. ${venue.surface} m², jusqu'à ${venue.capacity} personnes, à partir de ${venue.pricePerHour} € de l'heure.`
+).slice(0, 155);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Place",
+  name: venue.title,
+  description: venue.description,
+  url,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: venue.city,
+    postalCode: venue.postalCode,
+    addressCountry: "FR",
+  },
+  ...(toutes.length ? { image: toutes } : {}),
+  ...(venue.reviewCount > 0
+    ? {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: venue.rating,
+          reviewCount: venue.reviewCount,
+        },
+      }
+    : {}),
+};
+
+const ETOILE = "m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z";
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{venue.title} — {venue.typeLabel} à {venue.displayLocation} | Colosalle</title>
+    <meta name="description" content={metaDesc} />
+    <link rel="canonical" href={url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${venue.title} — ${venue.displayLocation}`} />
+    <meta property="og:description" content={metaDesc} />
+    <meta property="og:url" content={url} />
+    <meta property="og:site_name" content="Colosalle" />
+    {cover && <meta property="og:image" content={cover} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#E63946" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/site.css?v=4" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="wordmark" href="/">Colosalle</a>
+        <a class="nav-lien" href="/devenir-hote">Proposer un lieu</a>
+      </div>
+    </nav>
+
+    <div class="page">
+      <nav class="fil" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> &nbsp;/&nbsp;
+        <a href={`/salle-de-repetition/${venue.arrSlug}`}>{venue.displayLocation}</a> &nbsp;/&nbsp;
+        <span aria-current="page">{venue.title}</span>
+      </nav>
+
+      {photos.length > 0 && (
+        <div class={`mosaique ${classeMosaique}`}>
+          {photos.map((src, i) => (
+            <button type="button" data-photo={i} aria-label={`Agrandir la photo ${i + 1}`}>
+              <Image
+                src={src}
+                alt={`${venue.title}, vue ${i + 1}`}
+                inferSize
+                width={i === 0 ? 1100 : 620}
+                quality={72}
+                format="webp"
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchpriority={i === 0 ? "high" : "auto"}
+              />
+            </button>
+          ))}
+          <button type="button" class="voir-photos" data-photo="0">
+            <svg class="ico" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="m21 15-5-5L5 21" />
+            </svg>
+            {toutes.length} photos
+          </button>
+        </div>
+      )}
+
+      <header class="titre">
+        <h1>{venue.title}</h1>
+        <div class="meta">
+          <span>{venue.typeLabel}</span>
+          <span class="sep">|</span>
+          <span>{venue.displayLocation}</span>
+          {venue.reviewCount > 0 && (
+            <>
+              <span class="sep">|</span>
+              <span class="note">
+                <svg viewBox="0 0 24 24"><path d={ETOILE} /></svg>
+                {venue.rating.toFixed(1)} · {venue.reviewCount} avis
+              </span>
+            </>
+          )}
+        </div>
+      </header>
+
+      <div class="colonnes">
+        <div>
+          <div class="stats">
+            <div class="stat">
+              <svg class="ico" viewBox="0 0 24 24" set:html={icon("surface")} />
+              <div><b>{venue.surface} m²</b><span>Surface</span></div>
+            </div>
+            <div class="stat">
+              <svg class="ico" viewBox="0 0 24 24" set:html={icon("capacite")} />
+              <div><b>{venue.capacity} personnes</b><span>Capacité</span></div>
+            </div>
+            <div class="stat">
+              <svg class="ico" viewBox="0 0 24 24" set:html={icon("type")} />
+              <div><b>{venue.typeLabel}</b><span>Type de lieu</span></div>
+            </div>
+          </div>
+
+          {venue.description && (
+            <section class="section">
+              <h2>Le lieu</h2>
+              <p>{venue.description}</p>
+            </section>
+          )}
+
+          {venue.equipments.length > 0 && (
+            <section class="section">
+              <h2>Ce que le lieu propose</h2>
+              <ul class="equipements">
+                {venue.equipments.map((e) => (
+                  <li>
+                    <svg class="ico" viewBox="0 0 24 24" set:html={icon(e.id)} />
+                    {e.label}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          <section class="section">
+            <h2>Horaires d'accès</h2>
+            <div class="amplitude">
+              <svg class="ico" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.2 2" />
+              </svg>
+              <span>
+                Réservable de <b>{venue.horaires.amplitude}</b>
+                {venue.horaires.tousLesJours ? ", tous les jours." : "."}
+              </span>
+            </div>
+            {!venue.horaires.tousLesJours && (
+              <ul class="jours">
+                {venue.horaires.jours.map((j) => (
+                  <li class={j.ouvert ? "" : "ferme"}>{j.nom}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section class="section">
+            <h2>Où se trouve le lieu</h2>
+            {venue.position && (
+              <div
+                class="carte-geo"
+                id="carte-geo"
+                data-lat={venue.position.lat}
+                data-lng={venue.position.lng}
+              ></div>
+            )}
+            <div class="situation">
+              <svg class="ico" viewBox="0 0 24 24" set:html={icon("secteur")} />
+              <div>
+                <b>{venue.displayLocation}</b>
+                <span>
+                  La zone indiquée est approximative. L'adresse exacte vous est
+                  communiquée une fois la réservation confirmée.
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>Conditions d'annulation</h2>
+            <ul class="conditions">
+              {ANNULATION.map((c) => (
+                <li><span>{c.delai}</span><b>{c.valeur}</b></li>
+              ))}
+            </ul>
+            {venue.caution > 0 && (
+              <div class="encart">
+                <svg class="ico" viewBox="0 0 24 24">
+                  <path d="M12 2.5 4 6v6c0 5 3.4 8.6 8 9.5 4.6-.9 8-4.5 8-9.5V6z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+                <div>
+                  <b>Caution de {venue.caution} €</b>
+                  <span>
+                    Remise directement à l'hôte le jour de la réservation. Elle
+                    n'est pas encaissée par Colosalle et vous est rendue en fin
+                    de créneau.
+                  </span>
+                </div>
+              </div>
+            )}
+          </section>
+
+          {venue.avis.length > 0 && (
+            <section class="section">
+              <h2>Ce qu'en disent les artistes</h2>
+              <div class="note-globale">
+                <svg viewBox="0 0 24 24"><path d={ETOILE} /></svg>
+                <strong>{venue.rating.toFixed(1)}</strong>
+                <span>· {venue.reviewCount} avis</span>
+              </div>
+              <div class="avis-liste">
+                {venue.avis.slice(0, 6).map((a) => (
+                  <article>
+                    <div class="avis-tete">
+                      <div class="pastille">{a.auteur.charAt(0).toUpperCase()}</div>
+                      <div>
+                        <b>{a.auteur}</b>
+                        <time>{a.date}</time>
+                      </div>
+                    </div>
+                    <div class="etoiles" aria-label={`${a.note} sur 5`}>
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <svg viewBox="0 0 24 24" class={n <= a.note ? "pleine" : ""}>
+                          <path d={ETOILE} />
+                        </svg>
+                      ))}
+                    </div>
+                    <p class="avis-texte">{a.commentaire}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <aside class="carte">
+          <div class="carte-prix">
+            <strong>{venue.pricePerHour} €</strong>
+            <span>par heure</span>
+          </div>
+          {venue.pricePerDay && <p class="carte-jour">{venue.pricePerDay} € à la journée</p>}
+          <hr />
+          <a class="bouton" href="/">Réserver dans l'application</a>
+          <p class="carte-note">Paiement sécurisé. Vous ne payez rien avant la confirmation de l'hôte.</p>
+          <ul class="carte-liste">
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" set:html={icon("secteur")} />
+              <span>{venue.displayLocation}</span>
+            </li>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.2 2" />
+              </svg>
+              <span>Accessible de {venue.horaires.amplitude}</span>
+            </li>
+            <li>
+              <svg class="ico" viewBox="0 0 24 24" set:html={icon("capacite")} />
+              <span>Jusqu'à {venue.capacity} personnes</span>
+            </li>
+            {venue.caution > 0 && (
+              <li>
+                <svg class="ico" viewBox="0 0 24 24">
+                  <path d="M12 2.5 4 6v6c0 5 3.4 8.6 8 9.5 4.6-.9 8-4.5 8-9.5V6z" />
+                </svg>
+                <span>Caution de {venue.caution} €</span>
+              </li>
+            )}
+          </ul>
+        </aside>
+      </div>
+    </div>
+
+    <div class="barre-mobile">
+      <div class="barre-prix">
+        <strong>{venue.pricePerHour} €</strong>
+        <span>par heure</span>
+      </div>
+      <a class="bouton" href="/">Réserver</a>
+    </div>
+
+    <div class="visionneuse" id="visionneuse" role="dialog" aria-modal="true" aria-label="Photos du lieu">
+      <button type="button" class="vis-fermer" aria-label="Fermer">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      </button>
+      <button type="button" class="vis-prec" aria-label="Photo précédente">
+        <svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg>
+      </button>
+      <img id="vis-image" src="" alt="" />
+      <button type="button" class="vis-suiv" aria-label="Photo suivante">
+        <svg class="ico" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+      </button>
+      <div class="vis-compteur" id="vis-compteur"></div>
+    </div>
+
+    <footer class="pied">
+      <div class="pied-inner">
+        <span>© 2026 Colosalle</span>
+        <div class="pied-liens">
+          <a href="/cgu.html">Conditions générales</a>
+          <a href="/confidentialite.html">Confidentialité</a>
+          <a href="mailto:support@colosalle.fr">support@colosalle.fr</a>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline define:vars={{ toutes, titre: venue.title }}>
+      (function () {
+        var vis = document.getElementById("visionneuse");
+        var img = document.getElementById("vis-image");
+        var compteur = document.getElementById("vis-compteur");
+        var index = 0;
+
+        function afficher(i) {
+          index = (i + toutes.length) % toutes.length;
+          img.src = toutes[index];
+          img.alt = titre + ", photo " + (index + 1);
+          compteur.textContent = index + 1 + " / " + toutes.length;
+        }
+        function ouvrir(i) {
+          afficher(i);
+          vis.classList.add("ouverte");
+          document.body.classList.add("fige");
+        }
+        function fermer() {
+          vis.classList.remove("ouverte");
+          document.body.classList.remove("fige");
+        }
+
+        document.querySelectorAll("[data-photo]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            ouvrir(parseInt(b.dataset.photo, 10) || 0);
+          });
+        });
+        vis.querySelector(".vis-fermer").addEventListener("click", fermer);
+        vis.querySelector(".vis-prec").addEventListener("click", function (e) {
+          e.stopPropagation(); afficher(index - 1);
+        });
+        vis.querySelector(".vis-suiv").addEventListener("click", function (e) {
+          e.stopPropagation(); afficher(index + 1);
+        });
+        vis.addEventListener("click", function (e) { if (e.target === vis) fermer(); });
+        document.addEventListener("keydown", function (e) {
+          if (!vis.classList.contains("ouverte")) return;
+          if (e.key === "Escape") fermer();
+          if (e.key === "ArrowLeft") afficher(index - 1);
+          if (e.key === "ArrowRight") afficher(index + 1);
+        });
+      })();
+    </script>
+
+    <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script is:inline>
+      window.addEventListener("load", function () {
+        var el = document.getElementById("carte-geo");
+        if (!el || typeof L === "undefined") return;
+        var lat = parseFloat(el.dataset.lat);
+        var lng = parseFloat(el.dataset.lng);
+        var carte = L.map(el, {
+          center: [lat, lng],
+          zoom: 14,
+          scrollWheelZoom: false,
+          attributionControl: true,
+        });
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+          attribution: "&copy; OpenStreetMap, &copy; CARTO",
+          maxZoom: 19,
+        }).addTo(carte);
+        L.circle([lat, lng], {
+          radius: 420,
+          color: "#E63946",
+          weight: 1.5,
+          fillColor: "#E63946",
+          fillOpacity: 0.12,
+        }).addTo(carte);
+      });
+    </script>
+  </body>
+</html>
