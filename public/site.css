@@ -623,3 +623,73 @@ img { display: block; max-width: 100%; }
 .faq details[open] summary::after { transform: rotate(-135deg); top: 30px; }
 .faq summary:hover { color: var(--rouge); }
 .faq details p { margin: 0 0 20px; font-size: 15px; color: var(--gris); max-width: 64ch; }
+
+/* ============ Formulaire hote ============ */
+.formulaire-hote {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+  margin-top: 28px;
+  max-width: 720px;
+  text-align: left;
+}
+.formulaire-hote .champ { display: flex; flex-direction: column; gap: 6px; }
+.formulaire-hote .champ-large { grid-column: 1 / -1; }
+.formulaire-hote label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+}
+.formulaire-hote input,
+.formulaire-hote select,
+.formulaire-hote textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 11px 13px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.formulaire-hote textarea { resize: vertical; min-height: 84px; }
+.formulaire-hote input:focus,
+.formulaire-hote select:focus,
+.formulaire-hote textarea:focus {
+  outline: none;
+  border-color: var(--rouge);
+  background: rgba(255, 255, 255, 0.1);
+}
+.formulaire-hote input:disabled,
+.formulaire-hote select:disabled,
+.formulaire-hote textarea:disabled { opacity: 0.5; }
+.formulaire-hote select option { color: #1f1d1d; }
+.champ-piege {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.forme-mention {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.formulaire-hote .bouton { grid-column: 1 / -1; justify-self: start; }
+.forme-retour {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 1px;
+}
+.forme-retour.erreur { color: #ff9aa2; }
+.forme-retour.succes { color: #8fe3b0; }
+
+@media (max-width: 640px) {
+  .formulaire-hote { grid-template-columns: 1fr; }
+  .formulaire-hote .bouton { justify-self: stretch; text-align: center; }
+}

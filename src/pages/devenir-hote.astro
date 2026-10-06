@@ -69,7 +69,7 @@ const jsonLd = {
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap"
     />
-    <link rel="stylesheet" href="/site.css?v=5" />
+    <link rel="stylesheet" href="/site.css?v=8" />
   </head>
   <body>
     <nav class="nav">
@@ -167,18 +167,126 @@ const jsonLd = {
       </section>
 
       <section class="accueil-hote" id="commencer">
-        <div>
-          <h2>Prêt à proposer votre lieu ?</h2>
+        <div class="hote-interieur">
+          <h2>Proposez votre lieu</h2>
           <p>
-            La création d'annonce se fait dans l'application Colosalle. Si vous
-            préférez en parler avant, écrivez-nous : on vous rappelle et on monte
-            l'annonce avec vous.
+            Deux minutes suffisent. On vous rappelle sous 48 h et on monte
+            l'annonce avec vous : photos, tarifs, créneaux.
           </p>
-          <a class="bouton" href="mailto:support@colosalle.fr?subject=Je%20souhaite%20proposer%20un%20lieu">
-            Nous écrire
-          </a>
+
+          <form class="formulaire-hote" id="form-hote" novalidate>
+            <div class="champ">
+              <label for="f-nom">Votre nom *</label>
+              <input id="f-nom" name="nom" type="text" autocomplete="name" />
+            </div>
+            <div class="champ">
+              <label for="f-lieu">Nom du lieu *</label>
+              <input id="f-lieu" name="lieu" type="text" />
+            </div>
+            <div class="champ">
+              <label for="f-ville">Ville ou arrondissement *</label>
+              <input id="f-ville" name="ville" type="text" />
+            </div>
+            <div class="champ">
+              <label for="f-type">Type de lieu</label>
+              <select id="f-type" name="typeLieu">
+                <option value="">A preciser</option>
+                <option>Studio de danse</option>
+                <option>Salle de répétition</option>
+                <option>Théâtre</option>
+                <option>Bar ou café</option>
+                <option>Salle associative</option>
+                <option>Studio d'enregistrement</option>
+                <option>Autre</option>
+              </select>
+            </div>
+            <div class="champ">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" />
+            </div>
+            <div class="champ">
+              <label for="f-tel">Téléphone</label>
+              <input id="f-tel" name="telephone" type="tel" autocomplete="tel" inputmode="tel" />
+            </div>
+            <div class="champ champ-large">
+              <label for="f-message">Quelque chose à préciser ?</label>
+              <textarea id="f-message" name="message" rows="3"></textarea>
+            </div>
+
+            <div class="champ-piege" aria-hidden="true">
+              <label for="f-site">Ne remplissez pas ce champ</label>
+              <input id="f-site" name="site" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <p class="forme-mention">
+              Email ou téléphone : au moins l'un des deux, pour qu'on puisse
+              vous répondre.
+            </p>
+
+            <button class="bouton bouton-large" type="submit" id="envoyer">
+              Envoyer ma proposition
+            </button>
+            <p class="forme-retour" id="retour" role="status" aria-live="polite"></p>
+          </form>
         </div>
       </section>
+
+      <script is:inline>
+        (function () {
+          const form = document.getElementById("form-hote");
+          if (!form) return;
+          const bouton = document.getElementById("envoyer");
+          const retour = document.getElementById("retour");
+
+          function dire(texte, type) {
+            retour.className = "forme-retour " + type;
+            retour.textContent = texte;
+          }
+
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            dire("", "");
+
+            const d = Object.fromEntries(new FormData(form).entries());
+
+            if (!d.nom.trim() || !d.lieu.trim() || !d.ville.trim()) {
+              dire("Nom, lieu et ville sont obligatoires.", "erreur");
+              return;
+            }
+            if (!d.email.trim() && !d.telephone.trim()) {
+              dire("Laissez un email ou un téléphone pour qu'on puisse vous répondre.", "erreur");
+              return;
+            }
+
+            bouton.disabled = true;
+            bouton.textContent = "Envoi en cours...";
+
+            try {
+              const r = await fetch("/api/proposer-lieu", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(d),
+              });
+              const j = await r.json();
+              if (j.ok) {
+                form.querySelectorAll("input, select, textarea").forEach(function (el) {
+                  el.disabled = true;
+                });
+                bouton.textContent = "Proposition envoyée";
+                dire("C'est noté. On vous recontacte sous 48 h.", "succes");
+              } else {
+                dire(j.erreur || "Envoi impossible. Réessayez dans un instant.", "erreur");
+                bouton.disabled = false;
+                bouton.textContent = "Envoyer ma proposition";
+              }
+            } catch (err) {
+              dire("Connexion impossible. Réessayez dans un instant.", "erreur");
+              bouton.disabled = false;
+              bouton.textContent = "Envoyer ma proposition";
+            }
+          });
+        })();
+      </script>
     </div>
 
     <footer class="pied">
