@@ -27,3 +27,4 @@ service-account.json
 
 inspect.mjs
 test-firestore.mjs
+.vercel

@@ -1,0 +1,5 @@
+﻿User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://colosalle.fr/sitemap-index.xml
