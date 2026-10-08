@@ -1,0 +1,220 @@
+﻿---
+import { getPublishedVenues } from "../lib/venues.mjs";
+import { USAGES } from "../lib/usages.mjs";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  const { getPublishedVenues } = await import("../lib/venues.mjs");
+  const { USAGES } = await import("../lib/usages.mjs");
+  const venues = await getPublishedVenues();
+
+  const comptes = Object.fromEntries(
+    USAGES.map((u) => [u.slug, venues.filter(u.filtre).length])
+  );
+
+  return USAGES.map((u) => {
+    const lieux = venues
+      .filter(u.filtre)
+      .sort((a, b) => a.pricePerHour - b.pricePerHour);
+
+    const parQuartier = new Map();
+    for (const l of lieux) {
+      const q = parQuartier.get(l.arrSlug) || { nom: l.displayLocation, total: 0 };
+      q.total += 1;
+      parQuartier.set(l.arrSlug, q);
+    }
+
+    return {
+      params: { usage: u.slug },
+      props: {
+        h1: u.h1,
+        titre: u.titre,
+        accroche: u.accroche,
+        chapo: u.chapo,
+        sections: u.sections,
+        lieux,
+        quartiers: [...parQuartier.entries()]
+          .map(([slug, q]) => ({ slug, nom: q.nom, total: q.total }))
+          .sort((a, b) => a.nom.localeCompare(b.nom, "fr", { numeric: true })),
+        autres: USAGES.filter((x) => x.slug !== u.slug).map((x) => ({
+          slug: x.slug,
+          nom: x.nomCourt,
+          total: comptes[x.slug],
+        })),
+      },
+    };
+  });
+}
+
+const { h1, titre, accroche, chapo, sections, lieux, quartiers, autres } = Astro.props;
+const site = "https://colosalle.fr";
+const url = `${site}/${Astro.params.usage}`;
+
+const nb = lieux.length;
+const pluriel = nb > 1;
+const prix = lieux.map((l) => l.pricePerHour);
+const prixMin = nb ? Math.min(...prix) : 0;
+const prixMax = nb ? Math.max(...prix) : 0;
+const fourchette =
+  prixMin === prixMax
+    ? `${prixMin} € de l'heure`
+    : `de ${prixMin} à ${prixMax} € de l'heure`;
+
+const metaDesc = `${chapo} ${nb} lieu${pluriel ? "x" : ""} disponible${pluriel ? "s" : ""} sur Colosalle.`.slice(0, 158);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: h1,
+  url,
+  numberOfItems: nb,
+  itemListElement: lieux.map((l, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    url: `${site}/lieux/${l.slug}`,
+    name: l.title,
+  })),
+};
+
+const ETOILE = "m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z";
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titre}</title>
+    <meta name="description" content={metaDesc} />
+    <link rel="canonical" href={url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={h1} />
+    <meta property="og:description" content={metaDesc} />
+    <meta property="og:url" content={url} />
+    <meta property="og:site_name" content="Colosalle" />
+    {lieux[0]?.photos[0] && <meta property="og:image" content={lieux[0].photos[0]} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#E63946" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/site.css?v=10" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="wordmark" href="/">Colosalle</a>
+        <a class="nav-lien" href="/devenir-hote">Proposer un lieu</a>
+      </div>
+    </nav>
+
+    <div class="page">
+      <nav class="fil" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> &nbsp;/&nbsp;
+        <a href="/salle-de-repetition/paris">Paris</a> &nbsp;/&nbsp;
+        <span aria-current="page">{h1}</span>
+      </nav>
+
+      <header class="zone-tete">
+        <h1>{h1}</h1>
+        <p class="zone-intro">
+          {accroche} {nb > 0 && <>{nb} lieu{pluriel ? "x" : ""}, {fourchette}.</>}
+        </p>
+
+        {quartiers.length > 1 && (
+          <div class="sous-zones">
+            <span class="sous-zones-titre">Par arrondissement</span>
+            <div>
+              {quartiers.map((q) => (
+                <a href={`/salle-de-repetition/${q.slug}`}>
+                  {q.nom} <span>{q.total}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div class="sous-zones">
+          <span class="sous-zones-titre">Autres usages</span>
+          <div>
+            {autres.map((a) => (
+              <a href={`/${a.slug}`}>
+                {a.nom} <span>{a.total}</span>
+              </a>
+            ))}
+            <a href="/salle-de-repetition/paris">Toutes les salles à Paris</a>
+          </div>
+        </div>
+      </header>
+
+      {nb > 0 ? (
+        <ul class="grille">
+          {lieux.map((l) => (
+            <li class="fiche">
+              <a href={`/lieux/${l.slug}`}>
+                <div class="fiche-photo">
+                  {l.photos[0] ? (
+                    <Image
+                      src={l.photos[0]}
+                      alt={l.title}
+                      inferSize
+                      width={640}
+                      quality={70}
+                      format="webp"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="fiche-vide"></div>
+                  )}
+                  {l.reviewCount > 0 && (
+                    <span class="fiche-note">
+                      <svg viewBox="0 0 24 24"><path d={ETOILE} /></svg>
+                      {l.rating.toFixed(1)}
+                    </span>
+                  )}
+                </div>
+                <div class="fiche-corps">
+                  <span class="fiche-type">{l.typeLabel} · {l.displayLocation}</span>
+                  <h2>{l.title}</h2>
+                  <p class="fiche-specs">{l.surface} m² · jusqu'à {l.capacity} personnes</p>
+                  <p class="fiche-prix"><strong>{l.pricePerHour} €</strong> / heure</p>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="usage-compte">
+          Aucun lieu ne correspond pour l'instant.
+          <a href="/salle-de-repetition/paris">Voir toutes les salles à Paris</a>.
+        </p>
+      )}
+
+      <section class="usage-texte">
+        {sections.map((s) => (
+          <article>
+            <h2>{s.h2}</h2>
+            {s.p.map((t) => <p>{t}</p>)}
+          </article>
+        ))}
+      </section>
+    </div>
+
+    <footer class="pied">
+      <div class="pied-inner">
+        <span>© 2026 Colosalle</span>
+        <div class="pied-liens">
+          <a href="/devenir-hote">Proposer un lieu</a>
+          <a href="/cgu.html">Conditions générales</a>
+          <a href="/confidentialite.html">Confidentialité</a>
+          <a href="mailto:support@colosalle.fr">support@colosalle.fr</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

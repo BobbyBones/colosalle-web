@@ -693,3 +693,30 @@ img { display: block; max-width: 100%; }
   .formulaire-hote { grid-template-columns: 1fr; }
   .formulaire-hote .bouton { justify-self: stretch; text-align: center; }
 }
+
+/* ============ Pages usage ============ */
+.usage-compte {
+  margin: 0 0 20px;
+  font-size: 15px;
+  color: var(--gris);
+}
+.usage-texte {
+  margin: 52px 0 8px;
+  max-width: 68ch;
+}
+.usage-texte article + article { margin-top: 34px; }
+.usage-texte h2 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  color: var(--encre);
+}
+.usage-texte p {
+  margin: 0 0 14px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--gris);
+}
+.usage-texte p:last-child { margin-bottom: 0; }
