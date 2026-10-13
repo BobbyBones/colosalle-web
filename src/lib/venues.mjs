@@ -12,12 +12,22 @@ function initFirebase() {
 
 export function slugify(text) {
   return String(text)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
+    // Les ligatures ne sont PAS decomposees par normalize("NFD") : ce ne
+    // sont pas des lettres accentuees. Sans ces trois lignes, le « oe »
+    // de « coeur » tombe sur le remplacement non-alphanumerique plus bas
+    // et l'URL ressort en « c-ur ».
+    .replace(/œ/g, "oe")
+    .replace(/æ/g, "ae")
+    .replace(/ß/g, "ss")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
+    .slice(0, 60)
+    // La coupe a 60 caracteres peut retomber en plein milieu d'un mot et
+    // laisser un tiret final : on renettoie apres.
+    .replace(/-+$/g, "");
 }
 
 function arrondissement(postalCode, city) {
