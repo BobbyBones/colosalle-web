@@ -1,4 +1,4 @@
-﻿---
+---
 import { getPublishedVenues } from "../lib/venues.mjs";
 
 const venues = await getPublishedVenues();
@@ -18,8 +18,28 @@ const QUESTIONS = [
     r: "Des comédiens, danseurs, musiciens et compagnies, majoritairement issus des écoles parisiennes. Chaque compte est vérifié par email, et vous consultez le profil et les évaluations de l'artiste avant d'accepter une demande.",
   },
   {
+    q: "Pourquoi passer par Colosalle plutôt qu'en direct ?",
+    r: "Parce que ça ne vous coûte rien et que ça vous enlève du travail. Le paiement est encaissé au moment de la réservation et vous est versé automatiquement : pas de facture à établir, pas d'espèces à manipuler, pas de relance. La politique d'annulation s'applique sans que vous ayez à la négocier. Et chaque passage laisse une évaluation publique, qui fait venir les artistes suivants.",
+  },
+  {
     q: "Je garde la main sur mon planning ?",
     r: "Entièrement. Vous définissez vos horaires d'ouverture, bloquez les jours de fermeture et validez chaque réservation une par une. Aucune réservation ne se fait sans votre accord.",
+  },
+  {
+    q: "Puis-je retrouver mes réservations dans mon agenda ?",
+    r: "Chaque réservation confirmée vous est notifiée par email et dans l'application. Un flux d'abonnement, qui fera apparaître vos créneaux réservés directement dans Google Agenda ou Apple Calendrier, est en cours de développement.",
+  },
+  {
+    q: "Mon lieu compte plusieurs salles. Comment faire ?",
+    r: "Vous créez une annonce par salle, à la même adresse, en les nommant clairement : « Théâtre du Nord — Grande salle », « Théâtre du Nord — Studio ». Les artistes voient ainsi la capacité, les équipements et le tarif propres à chaque espace. Dites-le nous au moment de l'inscription, on monte les annonces avec vous.",
+  },
+  {
+    q: "J'ai déjà un logiciel de planning. Dois-je en changer ?",
+    r: "Non, et ce n'est pas le but. Colosalle ne remplace pas votre système de réservation : c'est un canal qui vous amène des artistes sur les créneaux que vous laissez libres. Vous gardez vos outils et vous ne publiez chez nous que les heures que vous souhaitez remplir.",
+  },
+  {
+    q: "Un salarié peut-il gérer les demandes à ma place ?",
+    r: "Aujourd'hui le compte est au nom du responsable du lieu, qui reste seul à renseigner les coordonnées bancaires. Le rattachement d'un régisseur ou d'un administrateur à l'annonce — accès aux demandes et aux messages, mais pas à la partie financière — est en préparation.",
   },
   {
     q: "Et si le lieu est abîmé ?",
