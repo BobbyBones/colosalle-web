@@ -1,0 +1,11 @@
+---
+// /annonce/<id>/modifier : page de l'application Flutter (voir src/lib/AppFlutter.astro).
+// Rendue par le serveur : les identifiants (lieu, conversation...) ne sont pas
+// connus au moment de la construction du site. Le gabarit est identique pour
+// toutes : le CDN de Vercel le garde une heure (vide a chaque deploiement).
+import AppFlutter from "../../lib/AppFlutter.astro";
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=3600");
+---
+
+<AppFlutter />

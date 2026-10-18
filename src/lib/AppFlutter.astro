@@ -1,0 +1,71 @@
+---
+// Page qui lance l'application Flutter (compilee pour le web) a l'adresse
+// demandee : colosalle.fr/, /explorer, /lieu/<id>, /connexion...
+//
+// Les FICHIERS de l'app (main.dart.js, assets, icones...) sont dans
+// public/app/, copies depuis `build/web` du projet Flutter apres
+// `flutter build web`. Les PAGES de l'app, elles, sont servies a la racine :
+// `<base href="/">` est ce que lit le routeur de l'app (go_router) pour
+// comprendre l'adresse, et window.colosalleBaseApp dit au chargeur
+// (web/flutter_bootstrap.js du projet Flutter) d'aller chercher les fichiers
+// dans /app/.
+//
+// Pas de lecture de public/app/index.html : les pages /lieu/... sont rendues
+// par le serveur (adresses infinies), qui n'a pas acces au dossier public.
+// Ce gabarit reprend donc web/index.html du projet Flutter. A garder en phase
+// si on y change quelque chose (cle Maps, client Google, ecran de demarrage).
+//
+// La cle Maps est publique par nature (elle part dans la page) : elle est
+// restreinte a colosalle.fr et localhost:5000 dans Google Cloud.
+interface Props {
+  titre?: string;
+  description?: string;
+}
+const {
+  titre = "Colosalle — salles de répétition à l'heure à Paris",
+  description = "Réservez à l'heure une salle de répétition ou de spectacle à Paris : théâtres, studios de danse, salles polyvalentes.",
+} = Astro.props;
+const BASE_APP = "/app/";
+const splash = (theme: string) =>
+  [1, 2, 3, 4].map((n) => `${BASE_APP}splash/img/${theme}-${n}x.png ${n}x`).join(", ");
+---
+
+<html lang="fr">
+  <head>
+    <base href="/" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#E63946" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Colosalle" />
+    <link rel="apple-touch-icon" href={`${BASE_APP}icons/Icon-192.png`} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="manifest" href={`${BASE_APP}manifest.json`} />
+    <meta name="google-signin-client_id" content="151636510424-ojbi5ofutjqaivne3mogv0ra2rkk1phd.apps.googleusercontent.com" />
+    <style is:inline>
+      html { height: 100%; }
+      body { margin: 0; min-height: 100%; background-color: #E63946; background-size: 100% 100%; }
+      .center { margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    </style>
+    <script is:inline>
+      function removeSplashFromWeb() {
+        document.getElementById("splash")?.remove();
+        document.getElementById("splash-branding")?.remove();
+        document.body.style.background = "transparent";
+      }
+    </script>
+    <script is:inline src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsf481xPWuvvd41S55RWbOUoBRLSS1ZKA"></script>
+  </head>
+  <body>
+    <picture id="splash">
+      <source srcset={splash("light")} media="(prefers-color-scheme: light)" />
+      <source srcset={splash("dark")} media="(prefers-color-scheme: dark)" />
+      <img class="center" aria-hidden="true" src={`${BASE_APP}splash/img/light-1x.png`} alt="" />
+    </picture>
+    <script is:inline>window.colosalleBaseApp = "/app/";</script>
+    <script is:inline src="/app/flutter_bootstrap.js" async></script>
+  </body>
+</html>
