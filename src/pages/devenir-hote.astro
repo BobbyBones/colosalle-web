@@ -19,7 +19,7 @@ const QUESTIONS = [
   },
   {
     q: "Pourquoi passer par Colosalle plutôt qu'en direct ?",
-    r: "Parce que ça ne vous coûte rien et que ça vous enlève du travail. Le paiement est encaissé au moment de la réservation et vous est versé automatiquement : pas de facture à établir, pas d'espèces à manipuler, pas de relance. La politique d'annulation s'applique sans que vous ayez à la négocier. Et chaque passage laisse une évaluation publique, qui fait venir les artistes suivants.",
+    r: "Parce que ça ne vous coûte rien et que ça vous enlève du travail. Le paiement est garanti dès la demande, débité quand vous l'acceptez et versé automatiquement : pas de facture à établir, pas d'espèces à manipuler, pas de relance. La politique d'annulation s'applique sans que vous ayez à la négocier. Et chaque passage laisse une évaluation publique, qui fait venir les artistes suivants.",
   },
   {
     q: "Je garde la main sur mon planning ?",
@@ -47,7 +47,7 @@ const QUESTIONS = [
   },
   {
     q: "Comment suis-je payé ?",
-    r: "Par virement automatique via Stripe, notre prestataire de paiement. L'artiste paie à la réservation, les fonds vous sont transférés sur votre compte bancaire. Vous n'avez aucune facture à établir ni d'espèces à manipuler.",
+    r: "Par virement automatique via Stripe, notre prestataire de paiement. La carte de l'artiste est bloquée dès sa demande et débitée quand vous l'acceptez ; les fonds sont ensuite transférés sur votre compte bancaire. Vous n'avez aucune facture à établir ni d'espèces à manipuler.",
   },
   {
     q: "Mon adresse est-elle publique ?",
@@ -105,7 +105,7 @@ const jsonLd = {
         <p>
           Bars, salles associatives, studios, théâtres : louez vos créneaux creux
           à des artistes, à l'heure. Vous fixez vos tarifs, vos horaires, et vous
-          touchez 100 % du montant.
+          acceptez chaque demande.
         </p>
         <a class="bouton bouton-large" href="#commencer">Proposer mon lieu</a>
       </div>
@@ -127,7 +127,7 @@ const jsonLd = {
             <h3>Zéro gestion</h3>
             <p>
               Pas de devis, pas de facture, pas d'espèces. L'artiste paie en ligne
-              au moment de réserver, et le virement arrive sur votre compte.
+              et le virement arrive sur votre compte.
             </p>
           </div>
           <div>
@@ -167,8 +167,8 @@ const jsonLd = {
           <li>
             <h3>Encaissez</h3>
             <p>
-              Le paiement est prélevé à la réservation et vous est reversé par
-              virement, sans intervention de votre part.
+              Le paiement est débité quand vous acceptez la demande et vous est
+              reversé par virement, sans intervention de votre part.
             </p>
           </li>
         </ol>
@@ -210,7 +210,7 @@ const jsonLd = {
             <div class="champ">
               <label for="f-type">Type de lieu</label>
               <select id="f-type" name="typeLieu">
-                <option value="">A preciser</option>
+                <option value="">À préciser</option>
                 <option>Studio de danse</option>
                 <option>Salle de répétition</option>
                 <option>Théâtre</option>
