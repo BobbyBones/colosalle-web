@@ -160,7 +160,7 @@ L'ensemble des éléments composant la Plateforme (textes, graphismes, logiciels
 
 L'Utilisateur conserve la propriété des contenus qu'il publie (photographies d'Espaces, descriptions, messages). En les publiant, il concède à Colosalle une licence non-exclusive d'utilisation, à des fins d'exploitation de la Plateforme.
 
-Le nom "Colosalle" et le logo associé sont des marques déposées (ou en cours de dépôt). Toute reproduction non autorisée est interdite.
+Le nom "Colosalle" et le logo associé sont la propriété de l'éditeur. Toute reproduction non autorisée est interdite.
 
 ---
 
