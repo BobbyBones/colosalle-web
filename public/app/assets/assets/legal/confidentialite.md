@@ -1,6 +1,6 @@
 # Politique de Confidentialité
 
-**Dernière mise à jour : 30 juin 2026**
+**Dernière mise à jour : 22 octobre 2026**
 
 ---
 
@@ -16,8 +16,8 @@ Cette politique est conforme au **Règlement Général sur la Protection des Don
 
 | Élément | Information |
 |---|---|
-| Responsable du traitement | **Bobby BOLLA**, personne physique |
-| SIRET | Sans objet — service édité à titre gratuit par une personne physique non immatriculée (un SIRET sera ajouté lors de l'activation de l'activité commerciale) |
+| Responsable du traitement | **Bobby BOLLA**, entrepreneur individuel (micro-entreprise) |
+| SIRET | 107 976 730 00013 |
 | Adresse | **40 rue des Saussaies, 94230 Cachan** |
 | Email de contact RGPD | privacy@colosalle.fr |
 
@@ -33,7 +33,7 @@ Aucun Délégué à la Protection des Données (DPO) n'est désigné, la nominat
 |---|---|---|
 | Identification | Prénom, nom, email, mot de passe (haché) | À l'inscription |
 | Profil | Photo, biographie, ville, école, disciplines, liens réseaux sociaux | Optionnel, ajouté volontairement |
-| Hôte uniquement | Adresses des Espaces, descriptions, photos, prix, disponibilités | À la publication d'une annonce |
+| Hôte uniquement | Adresses des Espaces, descriptions, photos, prix, disponibilités, adresse d'agenda importé (iCal), utilisée uniquement pour bloquer les créneaux déjà pris | À la publication d'une annonce |
 | Communication | Messages échangés entre Utilisateurs | Lors de l'utilisation du chat |
 | Avis | Notes et commentaires laissés après une Réservation | À la fin d'une Réservation |
 
@@ -41,7 +41,7 @@ Aucun Délégué à la Protection des Données (DPO) n'est désigné, la nominat
 
 | Catégorie | Données | Finalité |
 |---|---|---|
-| Technique | Type d'appareil, OS, version de l'app, identifiant de notification push | Fonctionnement de l'app, notifications |
+| Technique | Type d'appareil, OS, version de l'app, identifiant de notification (application et navigateur) | Fonctionnement de l'app, notifications |
 | Usage | Logs de connexion, écrans visités, actions effectuées | Amélioration du service, sécurité |
 | Erreurs | Crash logs, exceptions techniques | Stabilité de l'app (via Firebase Crashlytics) |
 | Géolocalisation | Position GPS approximative (avec consentement) | Affichage des Espaces à proximité |
@@ -87,6 +87,9 @@ Colosalle s'appuie sur les sous-traitants suivants, qui agissent sur instruction
 | Stripe Payments Europe | Traitement des paiements | UE (Irlande) |
 | Resend | Envoi d'emails transactionnels | États-Unis (avec garanties RGPD) |
 | Google Sign-In | Authentification optionnelle via compte Google | UE (Irlande) |
+| Apple | Authentification optionnelle via Connexion avec Apple | UE (Irlande) |
+| Google Maps Platform | Affichage des cartes | UE (Irlande) |
+| Vercel | Hébergement du site colosalle.fr | États-Unis (avec garanties RGPD) |
 
 ### 4.2 Autres Utilisateurs
 Certaines informations de profil (prénom, photo, ville, biographie) sont visibles par les autres Utilisateurs lorsqu'ils consultent une Réservation, une conversation ou une annonce vous concernant.
@@ -98,7 +101,7 @@ Conformément à l'article 242 bis du Code général des impôts, Colosalle peut
 
 ## 5. Transferts hors UE
 
-Certains de nos sous-traitants (notamment **Resend**) sont basés aux **États-Unis**. Les transferts sont encadrés par les **clauses contractuelles types** approuvées par la Commission européenne, ou par d'autres garanties appropriées (Data Privacy Framework).
+Certains de nos sous-traitants (notamment **Resend** et **Vercel**) sont basés aux **États-Unis**. Les transferts sont encadrés par les **clauses contractuelles types** approuvées par la Commission européenne, ou par d'autres garanties appropriées (Data Privacy Framework).
 
 ---
 
@@ -161,9 +164,9 @@ En cas de **violation de données personnelles** susceptible d'engendrer un risq
 
 ## 9. Cookies et traceurs
 
-L'application Colosalle utilise des **identifiants techniques** strictement nécessaires à son fonctionnement (token de session, identifiant de notification). Ces identifiants ne sont pas soumis au consentement préalable car indispensables à la fourniture du service demandé.
+L'application et le site colosalle.fr utilisent uniquement des **identifiants techniques** strictement nécessaires à leur fonctionnement (token de session conservé dans le stockage du navigateur ou de l'appareil, identifiant de notification). Ces identifiants ne sont pas soumis au consentement préalable car indispensables à la fourniture du service demandé.
 
-L'application **n'utilise pas** de cookies publicitaires ou de traceurs tiers à des fins marketing.
+L'application et le site **n'utilisent pas** de cookies publicitaires ou de traceurs tiers à des fins marketing.
 
 ---
 

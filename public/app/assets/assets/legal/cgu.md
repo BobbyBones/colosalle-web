@@ -1,12 +1,12 @@
 # Conditions Générales d'Utilisation et de Vente
 
-**Dernière mise à jour : 30 juin 2026**
+**Dernière mise à jour : 22 octobre 2026**
 
 ---
 
 ## Préambule
 
-Les présentes Conditions Générales (ci-après "**CG**") régissent l'utilisation de la plateforme **Colosalle** (ci-après "**la Plateforme**"), accessible via l'application mobile éditée par **Bobby BOLLA**, personne physique, à titre gratuit.
+Les présentes Conditions Générales (ci-après "**CG**") régissent l'utilisation de la plateforme **Colosalle** (ci-après "**la Plateforme**"), accessible via l'application mobile et le site colosalle.fr, éditée par **Bobby BOLLA**, entrepreneur individuel (micro-entreprise).
 
 En créant un compte ou en utilisant la Plateforme, l'utilisateur (ci-après "**l'Utilisateur**") accepte sans réserve les présentes CG.
 
@@ -18,19 +18,21 @@ En créant un compte ou en utilisant la Plateforme, l'utilisateur (ci-après "**
 
 | Élément | Information |
 |---|---|
-| Éditeur | **Bobby BOLLA**, personne physique (service édité à titre gratuit) |
-| SIRET | Sans objet — service édité à titre gratuit par une personne physique non immatriculée (un SIRET sera ajouté lors de l'activation de l'activité commerciale) |
+| Éditeur | **Bobby BOLLA**, entrepreneur individuel (micro-entreprise) |
+| SIRET | 107 976 730 00013 |
+| TVA | TVA non applicable, article 293 B du CGI |
 | Adresse du siège | **40 rue des Saussaies, 94230 Cachan** |
 | Email de contact | support@colosalle.fr |
 | Directeur de la publication | **Bobby BOLLA** |
 | Hébergement applicatif | Google Cloud Platform / Firebase, Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irlande |
+| Hébergement du site | Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis |
 | Prestataire de paiement | Stripe Payments Europe Limited, 1 Grand Canal Street Lower, Dublin 2, Irlande |
 
 ---
 
 ## 2. Définitions
 
-- **Plateforme** : l'application mobile Colosalle disponible sur Google Play et Apple App Store
+- **Plateforme** : l'application mobile Colosalle disponible sur Google Play et Apple App Store, ainsi que le site colosalle.fr
 - **Utilisateur** : toute personne disposant d'un compte sur la Plateforme
 - **Artiste** : Utilisateur qui réserve un Espace
 - **Hôte** : Utilisateur qui propose un Espace à la location
@@ -60,7 +62,7 @@ L'inscription sur la Plateforme est réservée aux personnes physiques majeures 
 L'Utilisateur s'engage à fournir des informations exactes lors de son inscription et à les tenir à jour.
 
 ### 4.2 Authentification
-L'Utilisateur peut créer son compte par email/mot de passe ou via son compte Google. L'Utilisateur est seul responsable de la confidentialité de ses identifiants.
+L'Utilisateur peut créer son compte par email/mot de passe, via son compte Google ou via Connexion avec Apple. L'Utilisateur est seul responsable de la confidentialité de ses identifiants.
 
 ### 4.3 Suspension et résiliation
 Colosalle se réserve le droit de suspendre ou supprimer tout compte en cas de manquement aux présentes CG, notamment en cas de fraude, de comportement abusif ou de fausse déclaration.
@@ -99,12 +101,12 @@ L'Artiste s'engage à :
 ## 6. Réservation et paiement
 
 ### 6.1 Processus de Réservation
-L'Artiste peut réserver un Espace selon les modalités proposées par l'Hôte (créneau horaire, tarif, conditions particulières). La Réservation est confirmée immédiatement après le paiement (système "Instant Book") sauf disposition contraire.
+L'Artiste peut réserver un Espace selon les modalités proposées par l'Hôte (créneau horaire, tarif, conditions particulières). La demande de Réservation est transmise à l'Hôte, qui dispose de **24 heures** pour l'accepter ou la refuser (ce délai est plus court lorsque le créneau commence plus tôt). La Réservation n'est conclue qu'à l'acceptation de l'Hôte ; à défaut de réponse dans le délai, la demande expire.
 
 ### 6.2 Paiement
 Les paiements sont traités par **Stripe**, prestataire de services de paiement agréé. Colosalle n'accède ni ne stocke les données bancaires de l'Utilisateur.
 
-L'Artiste paye le montant total de la Réservation au moment de la réservation. L'Hôte reçoit son paiement sur son compte bancaire dans un délai de **2 jours ouvrés** après la confirmation.
+Lors de la demande, le moyen de paiement de l'Artiste fait l'objet d'une **autorisation** pour le montant total de la Réservation. Il n'est débité qu'à l'acceptation de la demande par l'Hôte ; en cas de refus ou d'expiration de la demande, l'autorisation est levée et aucun montant n'est prélevé. L'Hôte reçoit son paiement sur son compte bancaire selon le calendrier de versement de Stripe.
 
 ### 6.3 Commission de la Plateforme
 Colosalle se réserve le droit de prélever une commission sur les transactions effectuées via la Plateforme.
@@ -123,7 +125,7 @@ Colosalle se réserve le droit de modifier sa politique tarifaire à tout moment
 ## 7. Annulations et remboursements
 
 ### 7.1 Annulation par l'Artiste
-L'Artiste peut annuler une Réservation selon les conditions affichées au moment de la réservation. Les modalités de remboursement dépendent du délai entre l'annulation et la date de la Réservation.
+L'Artiste peut annuler une Réservation selon les conditions affichées au moment de la réservation. Les modalités de remboursement dépendent du délai entre l'annulation et la date de la Réservation. Une demande de Réservation encore en attente de réponse de l'Hôte peut être annulée sans frais.
 
 ### 7.2 Annulation par l'Hôte
 L'Hôte peut annuler une Réservation en cas de force majeure ou de circonstances exceptionnelles. Dans ce cas, l'Artiste est intégralement remboursé.
@@ -164,7 +166,7 @@ Le nom "Colosalle" et le logo associé sont des marques déposées (ou en cours 
 
 ## 10. Données personnelles
 
-Le traitement des données personnelles est régi par la **Politique de Confidentialité**, accessible séparément dans l'application et qui fait partie intégrante des présentes CG.
+Le traitement des données personnelles est régi par la **Politique de Confidentialité**, accessible séparément dans l'application et sur le site colosalle.fr, et qui fait partie intégrante des présentes CG.
 
 ---
 
