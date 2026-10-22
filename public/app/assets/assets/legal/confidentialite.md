@@ -44,7 +44,7 @@ Aucun Délégué à la Protection des Données (DPO) n'est désigné, la nominat
 | Technique | Type d'appareil, OS, version de l'app, identifiant de notification (application et navigateur) | Fonctionnement de l'app, notifications |
 | Usage | Logs de connexion, écrans visités, actions effectuées | Amélioration du service, sécurité |
 | Erreurs | Crash logs, exceptions techniques | Stabilité de l'app (via Firebase Crashlytics) |
-| Géolocalisation | Position GPS approximative (avec consentement) | Affichage des Espaces à proximité |
+| Géolocalisation | Position de l'appareil (avec votre accord, sur l'application mobile) | Centrer la carte sur votre position — utilisée uniquement sur l'appareil, jamais enregistrée par Colosalle |
 
 ### 2.3 Données de paiement
 
