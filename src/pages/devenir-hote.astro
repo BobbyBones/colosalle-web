@@ -320,5 +320,11 @@ const jsonLd = {
         </div>
       </div>
     </footer>
+    <!-- Mesure d'audience anonyme (sans cookie) : une visite de la page. -->
+    <script is:inline>
+      try {
+        navigator.sendBeacon("/api/stat", JSON.stringify({ e: "vue_devenir_hote", s: "site" }));
+      } catch (e) {}
+    </script>
   </body>
 </html>

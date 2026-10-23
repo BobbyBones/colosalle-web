@@ -168,6 +168,8 @@ L'application et le site colosalle.fr utilisent uniquement des **identifiants te
 
 L'application et le site **n'utilisent pas** de cookies publicitaires ou de traceurs tiers à des fins marketing.
 
+**Mesure d'audience anonyme** : le site et l'application comptent, sans cookie ni identifiant, le nombre de consultations des annonces et de clics sur certains boutons (« Réserver », « Proposer un lieu »). Seuls des totaux par jour sont conservés ; ils ne permettent pas d'identifier ou de suivre une personne.
+
 ---
 
 ## 10. Mineurs
