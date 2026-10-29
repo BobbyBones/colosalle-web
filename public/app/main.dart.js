@@ -160693,11 +160693,11 @@ return A.ap(o,B.k,i,B.f,B.i,0,B.p)}h=j.b
 o=j.c
 if(h){n=A.j(a).ok
 m=n.b
-m=A.C("Trouvez votre salle de r\xe9p\xe9tition",i,i,i,i,i,m==null?i:m.b90(40,1.12,-0.9),B.aD,i,i)
+m=A.C("Trouvez votre lieu pour r\xe9p\xe9ter",i,i,i,i,i,m==null?i:m.b90(40,1.12,-0.9),B.aD,i,i)
 l=n.y
 if(l==null)n=i
 else{n=n.Q
-n=l.cF(n==null?i:n.b)}n=new A.aa(new A.a9(o,52,o,28),A.ap(A.c([m,B.dk,A.C("Th\xe9\xe2tres, studios de danse et salles polyvalentes \xe0 Paris, \xe0 r\xe9server \xe0 l'heure.",i,i,i,i,i,n,B.aD,i,i)],t.p),B.k,i,B.f,B.i,0,B.p),i)}else{n=j.d
+n=l.cF(n==null?i:n.b)}n=new A.aa(new A.a9(o,52,o,28),A.ap(A.c([m,B.dk,A.C("Th\xe9\xe2tres, studios, bars, restaurants et lieux atypiques \xe0 Paris, \xe0 r\xe9server \xe0 l'heure.",i,i,i,i,i,n,B.aD,i,i)],t.p),B.k,i,B.f,B.i,0,B.p),i)}else{n=j.d
 m=n==null
 n=!m?"Bonjour, "+n.gul():"Bonjour"
 n=A.c([A.C(n,i,i,i,i,i,A.j(a).ok.b,i,i,i),B.bc,A.C("Trouvez votre prochain lieu de cr\xe9ation",i,i,i,i,i,A.j(a).ok.y,i,i,i)],t.p)
