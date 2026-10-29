@@ -60,6 +60,8 @@ const TYPE_LABELS = {
   theatre: "Théâtre",
   studio: "Studio",
   salle: "Salle de répétition",
+  bar: "Bar / café",
+  restaurant: "Restaurant",
   autre: "Autre lieu",
 };
 
